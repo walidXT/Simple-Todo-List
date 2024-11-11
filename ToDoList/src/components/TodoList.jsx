@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextField, IconButton, Checkbox, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import {
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Paper, Button, Typography, TextField, IconButton, Checkbox, Select, 
+  MenuItem, FormControl, InputLabel
+} from '@mui/material';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Info as InfoIcon } from '@mui/icons-material';
 import TaskModal from './TaskModel';
+import TaskDetailsModal from './TaskDetailModel';
 
 const APIUrl = 'http://localhost:5000/api';
 
@@ -13,6 +18,8 @@ export default function TodoList() {
   const [currentTask, setCurrentTask] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);  
+  const [selectedTask, setSelectedTask] = useState(null);           
 
   useEffect(() => {
     fetchTasks();
@@ -178,11 +185,17 @@ export default function TodoList() {
                       />
                     </TableCell>
                     <TableCell>
-                      <IconButton color="primary" sx={{marginRight:'15px'}} onClick={() => {
+                      <IconButton color="primary"  onClick={() => {
                         setCurrentTask(task);
                         setOpenModal(true);
                       }}>
                         <EditIcon />
+                      </IconButton>
+                      <IconButton color="info"  onClick={() => {
+                        setSelectedTask(task);
+                        setOpenDetailsModal(true);
+                      }}>
+                        <InfoIcon />
                       </IconButton>
                       <IconButton color="error" onClick={() => handleDeleteTask(task._id)}>
                         <DeleteIcon />
@@ -207,6 +220,12 @@ export default function TodoList() {
         onDeleteProject={handleDeleteProject}
         task={currentTask}
         projects={projects}
+      />
+
+      <TaskDetailsModal
+        open={openDetailsModal}
+        onClose={() => setOpenDetailsModal(false)}
+        task={selectedTask}
       />
     </div>
   );
