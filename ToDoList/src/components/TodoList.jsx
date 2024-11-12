@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Button, Typography, TextField, IconButton, Checkbox, Select, 
+  Paper, Button, TextField, IconButton, Checkbox, Select, 
   MenuItem, FormControl, InputLabel
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Info as InfoIcon } from '@mui/icons-material';
@@ -102,6 +102,8 @@ export default function TodoList() {
     }, {});
   };
 
+  const areAllTasksComplete = (tasks) => tasks.every(task => task.isDone);
+
   const filteredTasks = tasks.filter(task => 
     (task.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     task.project.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -155,59 +157,78 @@ export default function TodoList() {
         </div>
       </div>
 
-      {Object.entries(groupedTasks).map(([date, tasks]) => (
-        <div key={date} style={{ marginBottom: '20px' }}>
-          <Typography variant="h6">{date}</Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Code</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Task Time</TableCell>
-                  <TableCell>Project</TableCell>
-                  <TableCell>Task Status</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tasks.map((task) => (
-                  <TableRow key={task._id} sx={{ backgroundColor: task.isDone ? '#e8f5e9' : '#ffebee' }}>
-                    <TableCell>{task.code}</TableCell>
-                    <TableCell>{task.description}</TableCell>
-                    <TableCell>{formatTaskTime(task.tasktime)}</TableCell>
-                    <TableCell>{task.project}</TableCell>
-                    <TableCell>
-                      <Checkbox
-                        checked={task.isDone}
-                        onChange={() => handleToggleTaskStatus(task)}
-                        color="primary"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <IconButton color="primary"  onClick={() => {
-                        setCurrentTask(task);
-                        setOpenModal(true);
-                      }}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton color="info"  onClick={() => {
-                        setSelectedTask(task);
-                        setOpenDetailsModal(true);
-                      }}>
-                        <InfoIcon />
-                      </IconButton>
-                      <IconButton color="error" onClick={() => handleDeleteTask(task._id)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
-      ))}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell><b>Date</b></TableCell>
+              <TableCell><b>Code</b></TableCell>
+              <TableCell><b>Description</b></TableCell>
+              <TableCell><b>Task Time</b></TableCell>
+              <TableCell><b>Project</b></TableCell>
+              <TableCell><b>Task Status</b></TableCell>
+              <TableCell><b>Actions</b></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Object.entries(groupedTasks).map(([date, tasks]) => {
+              const allComplete = areAllTasksComplete(tasks);
+
+              return (
+                <React.Fragment key={date}>
+                  {tasks.map((task, index) => (
+                    <TableRow key={task._id} sx={{ backgroundColor: task.isDone ? '#e8f5e9' : '#ffebee' }}>
+                      {index === 0 && (
+                        <TableCell
+                          rowSpan={tasks.length}
+                          style={{
+                            verticalAlign: 'center',
+                            backgroundColor: allComplete ? '#e8f5e9' : '#ffebee'
+                          }}
+                        >
+                          <b>{date}</b>
+                        </TableCell>
+                      )}
+                      <TableCell>{task.code}</TableCell>
+                      <TableCell>
+                        {task.description.length > 40 ? (
+                          <>{task.description.slice(0, 40)}...</>
+                        ):(task.description)}
+                      </TableCell>
+                      <TableCell>{formatTaskTime(task.tasktime)}</TableCell>
+                      <TableCell>{task.project}</TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={task.isDone}
+                          onChange={() => handleToggleTaskStatus(task)}
+                          color="primary"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton color="primary" onClick={() => {
+                          setCurrentTask(task);
+                          setOpenModal(true);
+                        }}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton color="info" onClick={() => {
+                          setSelectedTask(task);
+                          setOpenDetailsModal(true);
+                        }}>
+                          <InfoIcon />
+                        </IconButton>
+                        <IconButton color="error" onClick={() => handleDeleteTask(task._id)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </React.Fragment>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       <TaskModal
         open={openModal}
