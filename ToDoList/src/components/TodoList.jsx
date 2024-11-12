@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Button, TextField, IconButton, Checkbox, Select, 
-  MenuItem, FormControl, InputLabel
+  MenuItem, FormControl, InputLabel, useMediaQuery, Box
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Info as InfoIcon } from '@mui/icons-material';
 import TaskModal from './TaskModel';
@@ -19,7 +19,8 @@ export default function TodoList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [openDetailsModal, setOpenDetailsModal] = useState(false);  
-  const [selectedTask, setSelectedTask] = useState(null);           
+  const [selectedTask, setSelectedTask] = useState(null);  
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   useEffect(() => {
     fetchTasks();
@@ -120,10 +121,10 @@ export default function TodoList() {
   };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+    <Box sx={{ p: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2, flexDirection: isMobile ? 'column' : 'row' }}>
         <Button
-          sx={{borderRadius:'15px'}}
+          sx={{borderRadius:'15px', width: isMobile ? '100%' : 'auto', mb: isMobile ? 1 : 0 }}
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => {
@@ -133,16 +134,16 @@ export default function TodoList() {
         >
           Add Task
         </Button>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <Box sx={{ display: 'flex', gap: 1, flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto' }}>
           <TextField
-            sx={{width:'150px'}}
+            sx={{ width: isMobile ? '100%' : '150px' }}
             label="Search"
             variant="outlined"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search"
           />
-          <FormControl variant="outlined" style={{ minWidth: 120 }}>
+          <FormControl variant="outlined" sx={{ minWidth: 120, width: isMobile ? '100%' : 'auto' }}>
             <InputLabel>Filter</InputLabel>
             <Select
               value={filter}
@@ -154,10 +155,10 @@ export default function TodoList() {
               <MenuItem value="active">Active Tasks</MenuItem>
             </Select>
           </FormControl>
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -248,6 +249,6 @@ export default function TodoList() {
         onClose={() => setOpenDetailsModal(false)}
         task={selectedTask}
       />
-    </div>
+    </Box>
   );
 }

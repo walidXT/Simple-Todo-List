@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, Box, TextField, Button, Typography, FormControl ,InputLabel ,Select ,MenuItem ,Grid ,IconButton } from '@mui/material';
+import {
+  Modal, Box, TextField, Button, Typography, FormControl,
+  InputLabel, Select, MenuItem, Grid, IconButton
+} from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 
 const ApiUrl = 'http://localhost:5000/api';
@@ -10,10 +13,11 @@ const modalStyle = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: { xs: '90%', sm: '70%', md: '50%', lg: 400 },
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
+  borderRadius: 2,
 };
 
 export default function TaskModal({ open, onClose, onSave, task, projects, onAddProject, onDeleteProject }) {
@@ -88,8 +92,8 @@ export default function TaskModal({ open, onClose, onSave, task, projects, onAdd
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={modalStyle}>
-        <Typography variant="h6" component="h2">
-          {task ? 'Edit Task' : 'Add New Task'}
+        <Typography variant="h6" component="h2" gutterBottom>
+          {task ? 'Edit Task' : 'Add Task'}
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -108,7 +112,7 @@ export default function TaskModal({ open, onClose, onSave, task, projects, onAdd
             onChange={handleChange}
             margin="normal"
             multiline
-            rows={5}
+            rows={3}
             required
           />
           <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -145,18 +149,18 @@ export default function TaskModal({ open, onClose, onSave, task, projects, onAdd
               {projects.map((project) => (
                 <MenuItem key={project._id} value={project.name}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                  {project.name}
-                  <IconButton
-                    color="error"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteProject(project._id);
-                    }}
-                    sx={{ ml: 1 }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
+                    {project.name}
+                    <IconButton
+                      color="error"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteProject(project._id);
+                      }}
+                      sx={{ ml: 1 }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
                   </Box>
                 </MenuItem>
               ))}
@@ -190,7 +194,7 @@ export default function TaskModal({ open, onClose, onSave, task, projects, onAdd
               shrink: true,
             }}
           />
-          <Button type="submit" variant="contained" style={{ marginTop: '20px' }}>
+          <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
             {task ? 'Save' : 'Add Task'}
           </Button>
         </form>
